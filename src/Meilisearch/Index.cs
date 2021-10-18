@@ -24,10 +24,14 @@ namespace Meilisearch
         /// </summary>
         /// <param name="uid">Unique index identifier.</param>
         /// <param name="primaryKey">Documents primary key.</param>
-        public Index(string uid, string primaryKey = default)
+        /// <param name="createdAt">The creation date of the index.</param>
+        /// <param name="updatedAt">The latest update of the index.</param>
+        public Index(string uid, string primaryKey = default, DateTimeOffset? createdAt = default, DateTimeOffset? updatedAt = default)
         {
             this.Uid = uid;
             this.PrimaryKey = primaryKey;
+            this.CreatedAt = createdAt;
+            this.UpdatedAt = updatedAt;
         }
 
         /// <summary>
@@ -41,6 +45,16 @@ namespace Meilisearch
         public string PrimaryKey { get; internal set; }
 
         /// <summary>
+        /// Gets the latest update date of the index.
+        /// </summary>
+        public DateTimeOffset? UpdatedAt { get; internal set; }
+
+        /// <summary>
+        /// Gets the creation date of the index.
+        /// </summary>
+        public DateTimeOffset? CreatedAt { get; internal set; }
+
+        /// <summary>
         /// Fetch the info of the index.
         /// </summary>
         /// <returns>An instance of the index fetch.</returns>
@@ -49,6 +63,8 @@ namespace Meilisearch
             var response = await this.http.GetAsync($"indexes/{this.Uid}");
             var content = await response.Content.ReadFromJsonAsync<Index>();
             this.PrimaryKey = content.PrimaryKey;
+            this.CreatedAt = content.CreatedAt;
+            this.UpdatedAt = content.UpdatedAt;
             return this;
         }
 
@@ -71,6 +87,8 @@ namespace Meilisearch
             var message = await this.http.PutAsJsonAsync($"indexes/{this.Uid}", new { primaryKey = primarykeytoChange });
             var responsecontent = await message.Content.ReadFromJsonAsync<Index>();
             this.PrimaryKey = responsecontent.PrimaryKey;
+            this.CreatedAt = responsecontent.CreatedAt;
+            this.UpdatedAt = responsecontent.UpdatedAt;
             return this;
         }
 

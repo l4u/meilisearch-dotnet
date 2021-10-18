@@ -5,6 +5,7 @@ namespace Meilisearch
     using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Json;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Meilisearch.Extensions;
 
@@ -74,7 +75,10 @@ namespace Meilisearch
         public async Task<Index> CreateIndex(string uid, string primaryKey = default)
         {
             Index index = new Index(uid, primaryKey);
-            var response = await this.http.PostAsJsonAsync("/indexes", index);
+
+            JsonSerializerOptions options = new JsonSerializerOptions { IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+            var response = await this.http.PostAsJsonAsync("/indexes", index, options);
 
             return index.WithHttpClient(this.http);
         }
